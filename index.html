@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload with Metadata</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="file"],
+        input[type="text"],
+        .toggle-group {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+        }
+        .toggle-group label {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Upload with Metadata</h1>
+    <form id="uploadForm">
+        <div class="form-group">
+            <label for="image">Image:</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+        </div>
+
+        <div class="form-group">
+            <label for="hashtag">Hashtag:</label>
+            <div class="toggle-group">
+                <label>
+                    <input type="checkbox" id="hashtag" name="hashtag">
+                    Include hashtags
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="emoji">Emoji:</label>
+            <div class="toggle-group">
+                <label>
+                    <input type="checkbox" id="emoji" name="emoji">
+                    Include emojis
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description" required>
+        </div>
+
+        <div class="form-group">
+            <label>Tone:</label>
+            <div class="toggle-group">
+                <label><input type="radio" name="tone" value="happy" required> Happy</label>
+                <label><input type="radio" name="tone" value="serious"> Serious</label>
+                <label><input type="radio" name="tone" value="funny"> Funny</label>
+            </div>
+        </div>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            // Convert checkbox values to boolean
+            formData.set('hashtag', document.getElementById('hashtag').checked);
+            formData.set('emoji', document.getElementById('emoji').checked);
+
+            fetch('http://localhost:3000/api/onsubmit/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                // Display the Cloudinary image URL
+                if (data.image && data.image.url) {
+                    alert(`Form submitted successfully! Image URL: ${data.image.url}`);
+                } else {
+                    alert('Form submitted successfully!');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while submitting the form.');
+            });
+        });
+    </script>
+</body>
+</html>
